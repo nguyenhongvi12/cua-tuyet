@@ -320,17 +320,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
           }, 4000);
 
-          // Đếm ngược 30 giây (Phương án dự phòng)
-          let timeoutId = setTimeout(() => {
-            clearInterval(pollInterval); // Hết 30s dừng hỏi
-            if (!isPaid) {
-              if (qrStatusWrapper && qrActionsWrapper) {
-                qrStatusWrapper.style.display = 'none';
-                qrActionsWrapper.style.display = 'block';
-              }
-            }
-          }, 30000);
-
           // Sự kiện đóng Modal
           if (qrClose) {
             // Xóa sự kiện cũ (nếu có) để không bị lặp interval
@@ -339,7 +328,6 @@ document.addEventListener('DOMContentLoaded', () => {
             newQrClose.addEventListener('click', () => {
               qrModal.classList.remove('active');
               clearInterval(pollInterval);
-              clearTimeout(timeoutId);
             });
           }
         }

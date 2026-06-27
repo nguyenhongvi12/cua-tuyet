@@ -40,11 +40,13 @@ function doPost(e) {
     // F. Ghi chú
     const noteValue = payload.ghi_chu || payload.note || "";
 
-    // 2. Sinh Mã Đơn Hàng ngẫu nhiên: AI + 10 số ngẫu nhiên
+    // 2. Sinh Mã Đơn Hàng ngẫu nhiên hoặc lấy từ payload
     // H. Mã đơn hàng
-    let orderCodeValue = "AI";
-    for (let i = 0; i < 10; i++) {
-      orderCodeValue += Math.floor(Math.random() * 10);
+    let orderCodeValue = payload.ma_don_hang || "AI";
+    if (orderCodeValue === "AI") {
+      for (let i = 0; i < 10; i++) {
+        orderCodeValue += Math.floor(Math.random() * 10);
+      }
     }
 
     // 3. Số Tiền cố định 99.000đ

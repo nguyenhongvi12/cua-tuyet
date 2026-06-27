@@ -667,6 +667,32 @@
     </a>
   </div>
 
+  <!-- ===== QR PAYMENT MODAL ===== -->
+  <div class="qr-modal" id="qrModal">
+    <div class="qr-modal__overlay"></div>
+    <div class="qr-modal__content">
+      <button class="qr-modal__close" id="qrClose">&times;</button>
+      <h3 class="qr-modal__title">Gửi Yêu Cầu Thành Công!</h3>
+      <p class="qr-modal__desc">Vui lòng quét mã QR bên dưới để thanh toán số tiền <strong>99.000đ</strong> cho đơn hàng <strong id="qrOrderCode"></strong>.</p>
+      
+      <div class="qr-modal__image-wrapper">
+        <img src="" alt="QR Code Thanh Toán" id="qrImage" class="qr-modal__image" />
+      </div>
+
+      <div class="qr-modal__status" id="qrStatusWrapper">
+        <div class="qr-modal__spinner"></div>
+        <p class="qr-modal__status-text">Đang chờ hệ thống xác nhận...</p>
+      </div>
+
+      <div class="qr-modal__actions" id="qrActionsWrapper" style="display: none;">
+        <p class="qr-modal__manual-text">Nếu bạn đã chuyển khoản, vui lòng xác nhận để tham gia nhóm Zalo hỗ trợ.</p>
+        <a href="https://zalo.me/g/sdczb5ehiqm9tyimg1th" target="_blank" rel="noopener" class="btn btn--primary btn--full" id="btnConfirmPayment">
+          Xác Nhận Đã Chuyển Khoản
+        </a>
+      </div>
+    </div>
+  </div>
+
   <script src="main.js"></script>
 </body>
 </html>

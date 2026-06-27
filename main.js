@@ -233,12 +233,19 @@ document.addEventListener('DOMContentLoaded', () => {
         'other': 'Khác'
       };
 
+      // Sinh mã đơn hàng ngẫu nhiên (AI + 10 số)
+      let orderCode = "AI";
+      for (let i = 0; i < 10; i++) {
+        orderCode += Math.floor(Math.random() * 10);
+      }
+
       const payload = {
         ho_ten: data.name || '',
         so_dien_thoai: data.phone || '',
         nhu_cau: purposeMap[data.purpose] || data.purpose || '',
         khu_vuc: data.area || '',
-        ghi_chu: data.note || ''
+        ghi_chu: data.note || '',
+        ma_don_hang: orderCode
       };
 
       try {
@@ -262,21 +269,39 @@ document.addEventListener('DOMContentLoaded', () => {
       } catch (err) {
         console.error('Lỗi khi gửi dữ liệu:', err);
       } finally {
-        // Hiển thị thông báo thành công
-        const wrapper = document.querySelector('.final-cta__form-wrapper');
-        if (wrapper) {
-          wrapper.innerHTML = `
-            <div style="text-align: center; padding: 40px 20px;">
-              <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
-              <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; color: var(--color-text-light); margin-bottom: 12px;">
-                Cảm ơn bạn!
-              </h3>
-              <p style="color: var(--color-text-body); font-size: 16px; line-height: 1.6; max-width: 400px; margin: 0 auto;">
-                Chúng tôi đã nhận được thông tin và sẽ liên hệ tư vấn trong thời gian sớm nhất.<br/>
-                Hoặc gọi ngay <a href="tel:0906789543" style="color: var(--color-accent-gold); font-weight: 600;">090.6789.543</a> để được hỗ trợ ngay.
-              </p>
-            </div>
-          `;
+        // Hiển thị Modal QR thay vì thông báo tại chỗ
+        const qrModal = document.getElementById('qrModal');
+        const qrOrderCode = document.getElementById('qrOrderCode');
+        const qrImage = document.getElementById('qrImage');
+        const qrStatusWrapper = document.getElementById('qrStatusWrapper');
+        const qrActionsWrapper = document.getElementById('qrActionsWrapper');
+        const qrClose = document.getElementById('qrClose');
+
+        if (qrModal) {
+          // Gán thông tin
+          qrOrderCode.textContent = orderCode;
+          
+          // Tạo URL mã QR động
+          const qrUrl = `https://vietqr.app/img?bank=Vietinbank&acc=108005176196&amount=99000&des=SEVQR+chuyen+khoan+${orderCode}&template=compact`;
+          qrImage.src = qrUrl;
+
+          // Hiển thị Modal
+          qrModal.classList.add('active');
+
+          // Đếm ngược 30 giây
+          setTimeout(() => {
+            if (qrStatusWrapper && qrActionsWrapper) {
+              qrStatusWrapper.style.display = 'none';
+              qrActionsWrapper.style.display = 'block';
+            }
+          }, 30000);
+
+          // Sự kiện đóng Modal
+          if (qrClose) {
+            qrClose.addEventListener('click', () => {
+              qrModal.classList.remove('active');
+            });
+          }
         }
       }
     });

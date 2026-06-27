@@ -206,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== 9. FORM HANDLING & GOOGLE SHEET SYNC =====
   // Nhập URL Web App của Google Apps Script sau khi triển khai sync_lead.js tại đây
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyGmocvFOPo2NCdX7jElVqWBT3v3izGthqveTZTfieA1wmx1kkgbkyOIMBO250OrH18Xg/exec"; 
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxrLUVMdpbJOEeOPVQcz455beGWF_lZtNA90Vm0lTlGAN1KSoRQEJh42Kw5KwKR_Rh6Q/exec"; 
 
   const leadForm = document.getElementById('leadForm');
   const formSubmitBtn = document.getElementById('form-submit');

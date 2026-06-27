@@ -3,7 +3,7 @@
  */
 
 const SPREADSHEET_ID = "1VJ0CP3083dfM5MMqMsL0yvSF6Yo0H8PU95KdKMUgyOM";
-const SHEET_NAME = "Lead";
+const SHEET_NAME = "LEAD";
 
 function doPost(e) {
   const result = {
@@ -27,34 +27,46 @@ function doPost(e) {
     }
 
     // 1. Trích xuất thông tin
-    const timeValue = payload.thoi_gian || payload.timestamp || payload.time || payload.date || getFormattedDate();
-    const nameValue = payload.ten || payload.name || payload.fullname || payload.fullName || "";
-    const phoneValue = payload.so_dien_thoai || payload.sdt || payload.phone || payload.phoneNumber || payload.phone_number || "";
-    const paymentValue = payload.thanh_toan || payload.payment || payload.status || "Chưa thanh toán";
+    // A. Thời gian
+    const timeValue = getFormattedDate();
+    // B. Họ Tên
+    const nameValue = payload.ho_ten || payload.name || "";
+    // C. Số điện thoại
+    const phoneValue = payload.so_dien_thoai || payload.phone || "";
+    // D. Nhu cầu sử dụng
+    const purposeValue = payload.nhu_cau || payload.purpose || "";
+    // E. Khu vực giao
+    const areaValue = payload.khu_vuc || payload.area || "";
+    // F. Ghi chú
+    const noteValue = payload.ghi_chu || payload.note || "";
 
     // 2. Sinh Mã Đơn Hàng ngẫu nhiên: AI + 10 số ngẫu nhiên
+    // H. Mã đơn hàng
     let orderCodeValue = "AI";
     for (let i = 0; i < 10; i++) {
       orderCodeValue += Math.floor(Math.random() * 10);
     }
 
-    // 3. Số Tiền cố định 19.000đ
-    const amountValue = "19.000đ";
+    // 3. Số Tiền cố định 99.000đ
+    // G. Số Tiền
+    const amountValue = "99.000đ";
 
     // 4. Mở Google Sheet và ghi dữ liệu
     const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
     let sheet = ss.getSheetByName(SHEET_NAME);
     
-    // Nếu sheet chưa tồn tại, tạo mới và thêm tiêu đề 6 cột (A-F)
+    // Nếu sheet chưa tồn tại, tạo mới và thêm tiêu đề 8 cột (A-H)
     if (!sheet) {
       sheet = ss.insertSheet(SHEET_NAME);
       const headers = [
         "Thời gian", 
-        "Tên", 
+        "Họ Tên", 
         "Số điện thoại", 
-        "Thanh toán", 
-        "Mã Đơn Hàng", 
-        "Số Tiền"
+        "Nhu cầu sử dụng", 
+        "Khu vực giao", 
+        "Ghi chú",
+        "Số tiền",
+        "Mã đơn hàng"
       ];
       sheet.appendRow(headers);
       
@@ -66,14 +78,16 @@ function doPost(e) {
       sheet.setFrozenRows(1);
     }
 
-    // Ghi dòng dữ liệu mới tương ứng 6 cột
+    // Ghi dòng dữ liệu mới tương ứng 8 cột
     const newRow = [
       timeValue,
       nameValue,
       phoneValue,
-      paymentValue,
-      orderCodeValue,
-      amountValue
+      purposeValue,
+      areaValue,
+      noteValue,
+      amountValue,
+      orderCodeValue
     ];
     
     sheet.appendRow(newRow);

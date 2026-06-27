@@ -1,3 +1,4 @@
+// https://script.google.com/macros/s/AKfycbwxrLUVMdpbJOEeOPVQcz455beGWF_lZtNA90Vm0lTlGAN1KSoRQEJh42Kw5KwKR_Rh6Q/exec
 /* ===================================================
    main.js — Landing Page Cua Tuyết
    Interactions: Scroll animations, navbar, FAQ, 
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== 1. SCROLL ANIMATIONS (Intersection Observer) =====
   const animatedElements = document.querySelectorAll('.animate-on-scroll');
-  
+
   const observerOptions = {
     root: null,
     rootMargin: '0px 0px -80px 0px',
@@ -30,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // ===== 2. NAVBAR — Transparent → Solid on scroll =====
   const navbar = document.getElementById('navbar');
   const hero = document.getElementById('hero');
-  
+
   const handleNavbarScroll = () => {
     const scrollY = window.scrollY;
     if (scrollY > 60) {
@@ -148,12 +149,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== 6. STICKY BOTTOM BAR (Mobile) =====
   const stickyBar = document.getElementById('stickyBar');
-  
+
   if (stickyBar) {
     const handleStickyBar = () => {
       const heroHeight = hero ? hero.offsetHeight : 600;
       const scrollThreshold = heroHeight * 0.5;
-      
+
       if (window.scrollY > scrollThreshold) {
         stickyBar.classList.add('visible');
       } else {
@@ -172,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const handleParallax = () => {
       const scrollY = window.scrollY;
       const heroHeight = hero ? hero.offsetHeight : 800;
-      
+
       if (scrollY < heroHeight) {
         const translateY = scrollY * 0.3;
         heroBg.style.transform = `translateY(${translateY}px)`;
@@ -185,16 +186,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== 8. SMOOTH SCROLL for anchor links =====
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function(e) {
+    anchor.addEventListener('click', function (e) {
       const targetId = this.getAttribute('href');
       if (targetId === '#') return;
-      
+
       const targetEl = document.querySelector(targetId);
       if (targetEl) {
         e.preventDefault();
         const navHeight = navbar ? navbar.offsetHeight : 60;
         const targetPosition = targetEl.getBoundingClientRect().top + window.scrollY - navHeight - 20;
-        
+
         window.scrollTo({
           top: targetPosition,
           behavior: 'smooth'
@@ -206,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ===== 9. FORM HANDLING & GOOGLE SHEET SYNC =====
   // Nhập URL Web App của Google Apps Script sau khi triển khai sync_lead.js tại đây
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxrLUVMdpbJOEeOPVQcz455beGWF_lZtNA90Vm0lTlGAN1KSoRQEJh42Kw5KwKR_Rh6Q/exec"; 
+  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwxrLUVMdpbJOEeOPVQcz455beGWF_lZtNA90Vm0lTlGAN1KSoRQEJh42Kw5KwKR_Rh6Q/exec";
 
   const leadForm = document.getElementById('leadForm');
   const formSubmitBtn = document.getElementById('form-submit');
@@ -231,13 +232,13 @@ document.addEventListener('DOMContentLoaded', () => {
         'restaurant': 'Nhà hàng / Số lượng lớn',
         'other': 'Khác'
       };
-      
+
       const payload = {
-        name: data.name || '',
-        phone: data.phone || '',
-        interest: purposeMap[data.purpose] || data.purpose || '',
-        channel: 'Landing Page Cua Tuyết',
-        note: `Khu vực: ${data.area || 'Chưa cung cấp'}. Ghi chú: ${data.note || 'Không có'}`
+        ho_ten: data.name || '',
+        so_dien_thoai: data.phone || '',
+        nhu_cau: purposeMap[data.purpose] || data.purpose || '',
+        khu_vuc: data.area || '',
+        ghi_chu: data.note || ''
       };
 
       try {

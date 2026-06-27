@@ -116,13 +116,43 @@ function doPost(e) {
 }
 
 function doGet(e) {
-  const info = {
-    status: "active",
-    message: "Google Apps Script Web App đang hoạt động tốt!",
-    spreadsheetId: SPREADSHEET_ID,
-    sheetName: SHEET_NAME
-  };
-  return ContentService.createTextOutput(JSON.stringify(info))
+  const result = { status: "error", message: "Invalid request" };
+
+  try {
+    if (e.parameter && e.parameter.ma_don_hang) {
+      const maDonHang = e.parameter.ma_don_hang;
+      const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+      const sheet = ss.getSheetByName(SHEET_NAME);
+      
+      if (sheet) {
+        const data = sheet.getDataRange().getValues();
+        // Cột H là Mã đơn hàng (index 7), cột J là Thanh Toán (index 9)
+        let found = false;
+        for (let i = data.length - 1; i >= 1; i--) {
+          if (data[i][7] === maDonHang) {
+            result.status = "success";
+            result.payment_status = data[i][9] || "UNPAID";
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          result.message = "Không tìm thấy mã đơn hàng";
+        }
+      } else {
+        result.message = "Sheet không tồn tại";
+      }
+    } else {
+      result.status = "active";
+      result.message = "Google Apps Script Web App đang hoạt động tốt!";
+      result.spreadsheetId = SPREADSHEET_ID;
+    }
+  } catch (error) {
+    result.status = "error";
+    result.message = "Lỗi: " + error.toString();
+  }
+
+  return ContentService.createTextOutput(JSON.stringify(result))
     .setMimeType(ContentService.MimeType.JSON);
 }
 

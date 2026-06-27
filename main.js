@@ -276,9 +276,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const qrImage = document.getElementById('qrImage');
         const qrStatusWrapper = document.getElementById('qrStatusWrapper');
         const qrActionsWrapper = document.getElementById('qrActionsWrapper');
+        const qrSuccessWrapper = document.getElementById('qrSuccessWrapper');
         const qrClose = document.getElementById('qrClose');
 
         if (qrModal) {
+          // Reset giao diện Modal phòng khi mở lại
+          if (qrStatusWrapper) qrStatusWrapper.style.display = 'flex';
+          if (qrActionsWrapper) qrActionsWrapper.style.display = 'none';
+          if (qrSuccessWrapper) qrSuccessWrapper.style.display = 'none';
+          if (qrImage) qrImage.parentElement.style.display = 'inline-block';
+
           // Gán thông tin
           qrOrderCode.textContent = orderCode;
           
@@ -289,18 +296,50 @@ document.addEventListener('DOMContentLoaded', () => {
           // Hiển thị Modal
           qrModal.classList.add('active');
 
-          // Đếm ngược 30 giây
-          setTimeout(() => {
-            if (qrStatusWrapper && qrActionsWrapper) {
-              qrStatusWrapper.style.display = 'none';
-              qrActionsWrapper.style.display = 'block';
+          // Cài đặt polling kiểm tra thanh toán mỗi 4 giây
+          let isPaid = false;
+          let pollInterval = setInterval(async () => {
+            try {
+              if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.trim() !== "") {
+                const checkUrl = `${GOOGLE_SCRIPT_URL}?ma_don_hang=${orderCode}`;
+                const res = await fetch(checkUrl);
+                const result = await res.json();
+                
+                if (result.status === "success" && result.payment_status === "PAID") {
+                  isPaid = true;
+                  clearInterval(pollInterval);
+                  // Chuyển UI sang trạng thái thành công
+                  if (qrStatusWrapper) qrStatusWrapper.style.display = 'none';
+                  if (qrActionsWrapper) qrActionsWrapper.style.display = 'none';
+                  if (qrImage) qrImage.parentElement.style.display = 'none'; // Ẩn mã QR
+                  if (qrSuccessWrapper) qrSuccessWrapper.style.display = 'block';
+                }
+              }
+            } catch (err) {
+              console.log("Polling error (có thể do mạng hoặc Apps Script redirect):", err);
+            }
+          }, 4000);
+
+          // Đếm ngược 30 giây (Phương án dự phòng)
+          let timeoutId = setTimeout(() => {
+            clearInterval(pollInterval); // Hết 30s dừng hỏi
+            if (!isPaid) {
+              if (qrStatusWrapper && qrActionsWrapper) {
+                qrStatusWrapper.style.display = 'none';
+                qrActionsWrapper.style.display = 'block';
+              }
             }
           }, 30000);
 
           // Sự kiện đóng Modal
           if (qrClose) {
-            qrClose.addEventListener('click', () => {
+            // Xóa sự kiện cũ (nếu có) để không bị lặp interval
+            const newQrClose = qrClose.cloneNode(true);
+            qrClose.parentNode.replaceChild(newQrClose, qrClose);
+            newQrClose.addEventListener('click', () => {
               qrModal.classList.remove('active');
+              clearInterval(pollInterval);
+              clearTimeout(timeoutId);
             });
           }
         }

@@ -1,0 +1,223 @@
+{
+  "name": "SePay ➔ Google Sheet ➔ Gmail",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sepay-webhook",
+        "options": {}
+      },
+      "id": "1",
+      "name": "SePay Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [ 250, 300 ]
+    },
+    {
+      "parameters": {
+        "keepOnlySet": true,
+        "values": {
+          "string": [
+            {
+              "name": "orderCode",
+              "value": "={{ $json.body.content ? ($json.body.content.match(/AI\\d{10}/) ? $json.body.content.match(/AI\\d{10}/)[0] : '') : '' }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2",
+      "name": "Extract Order Code",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [ 450, 300 ]
+    },
+    {
+      "parameters": {
+        "operation": "lookup",
+        "documentId": {
+          "__rl": true,
+          "value": "1VJ0CP3083dfM5MMqMsL0yvSF6Yo0H8PU95KdKMUgyOM",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "LEAD",
+          "mode": "name"
+        },
+        "lookupColumn": "Mã đơn hàng",
+        "lookupValue": "={{ $json.orderCode }}",
+        "options": {}
+      },
+      "id": "3",
+      "name": "Search Order in Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [ 650, 300 ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json['Mã đơn hàng'] }}",
+              "operation": "isNotEmpty"
+            }
+          ]
+        }
+      },
+      "id": "4",
+      "name": "Order Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [ 850, 300 ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1VJ0CP3083dfM5MMqMsL0yvSF6Yo0H8PU95KdKMUgyOM",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "LEAD",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Thanh Toán": "PAID"
+          },
+          "matchingColumns": [
+            "Mã đơn hàng"
+          ],
+          "schema": [
+            { "id": "Thanh Toán", "displayName": "Thanh Toán", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5",
+      "name": "Update to PAID",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [ 1050, 280 ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.Email }}",
+        "subject": "Xác nhận đơn hàng Cua Tuyết thành công",
+        "message": "Chào bạn ={{ $json['Họ Tên'] }},\n\nChúng tôi đã nhận được thanh toán 99.000đ cho đơn hàng ={{ $json['Mã đơn hàng'] }}.\n\nCảm ơn bạn đã tin tưởng Hải Sản Hoàng Gia!\nChúng tôi sẽ liên hệ sớm nhất để giao hàng.",
+        "appendAttribution": false
+      },
+      "id": "6",
+      "name": "Send Confirmation Email",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [ 1250, 280 ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1VJ0CP3083dfM5MMqMsL0yvSF6Yo0H8PU95KdKMUgyOM",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "LEAD",
+          "mode": "name"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Gửi Email": "SENT"
+          },
+          "matchingColumns": [
+            "Mã đơn hàng"
+          ],
+          "schema": [
+            { "id": "Gửi Email", "displayName": "Gửi Email", "required": false, "defaultMatch": false, "display": true, "type": "string", "canBeUsedToMatch": false }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7",
+      "name": "Update to SENT",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4,
+      "position": [ 1450, 280 ]
+    }
+  ],
+  "connections": {
+    "SePay Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract Order Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Order Code": {
+      "main": [
+        [
+          {
+            "node": "Search Order in Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Order in Sheet": {
+      "main": [
+        [
+          {
+            "node": "Order Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Order Found?": {
+      "main": [
+        [
+          {
+            "node": "Update to PAID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to PAID": {
+      "main": [
+        [
+          {
+            "node": "Send Confirmation Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Confirmation Email": {
+      "main": [
+        [
+          {
+            "node": "Update to SENT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

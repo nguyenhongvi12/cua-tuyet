@@ -242,6 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const payload = {
         ho_ten: data.name || '',
         so_dien_thoai: data.phone || '',
+        email: data.email || '',
         nhu_cau: purposeMap[data.purpose] || data.purpose || '',
         khu_vuc: data.area || '',
         ghi_chu: data.note || '',

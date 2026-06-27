@@ -33,6 +33,8 @@ function doPost(e) {
     const nameValue = payload.ho_ten || payload.name || "";
     // C. Số điện thoại
     const phoneValue = payload.so_dien_thoai || payload.phone || "";
+    // C2. Email
+    const emailValue = payload.email || "";
     // D. Nhu cầu sử dụng
     const purposeValue = payload.nhu_cau || payload.purpose || "";
     // E. Khu vực giao
@@ -68,7 +70,10 @@ function doPost(e) {
         "Khu vực giao", 
         "Ghi chú",
         "Số tiền",
-        "Mã đơn hàng"
+        "Mã đơn hàng",
+        "Email",
+        "Thanh Toán",
+        "Gửi Email"
       ];
       sheet.appendRow(headers);
       
@@ -89,7 +94,10 @@ function doPost(e) {
       areaValue,
       noteValue,
       amountValue,
-      orderCodeValue
+      orderCodeValue,
+      emailValue,
+      "UNPAID", // Trạng thái Thanh Toán mặc định
+      ""        // Trạng thái Gửi Email mặc định
     ];
     
     sheet.appendRow(newRow);
